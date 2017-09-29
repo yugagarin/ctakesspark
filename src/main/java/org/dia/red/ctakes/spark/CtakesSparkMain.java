@@ -42,7 +42,7 @@ public class CtakesSparkMain {
 		conf.setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 				
-		JavaRDD<String> note = sc.textFile("file:///usr/local/SparkStreamingCTK/testdata100.txt"); //jdfs:// adls://
+		JavaRDD<String> note = sc.textFile("hdfs:///tmp/testdata100.txt"); //jdfs:// adls://
 		JavaRDD<String> output = note.map(new CtakesFunction());
 		
 		//save output to hdfs
