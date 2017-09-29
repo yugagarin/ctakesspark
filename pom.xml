@@ -116,7 +116,7 @@ the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <minimizeJar>true</minimizeJar>
+              <minimizeJar>false</minimizeJar>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <artifactSet>
                 <excludes>
@@ -125,7 +125,7 @@ the License.
                   <exclude>jmock:*</exclude>
                   <exclude>*:xml-apis</exclude>
                   <exclude>org.apache.maven:lib:tests</exclude>
-                  <exclude>log4j:log4j:jar:</exclude>
+                  <!--  <exclude>log4j:log4j:jar:</exclude>-->
                 </excludes>
               </artifactSet>
             </configuration>
@@ -170,5 +170,17 @@ the License.
       	<artifactId>ctakes-clinical-pipeline</artifactId>
       	<version>${ctakes.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>2.2.11</version>
+    </dependency>
+	<dependency>
+    	<groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-core</artifactId>
+        <version>2.2.11</version>
+     </dependency>
+</dependencies>
+      
     </dependencies>
 </project>

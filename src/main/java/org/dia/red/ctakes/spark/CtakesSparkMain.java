@@ -44,7 +44,7 @@ public class CtakesSparkMain {
 				
 		JavaRDD<String> note = sc.textFile("hdfs:///tmp/testdata100.txt"); //jdfs:// adls://
 		JavaRDD<String> output = note.map(new CtakesFunction());
-		
+				
 		//save output to hdfs
 		//output.saveAsTextFile("file:///usr/local/SparkStreamingCTK/test_output.txt");
 		sc.close();
