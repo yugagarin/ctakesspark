@@ -38,45 +38,18 @@ public class CtakesSparkMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		if (args.length != 1) {
-			System.err.println("please supply port");
-			System.exit(-1);
-		}
-		int port = Integer.parseInt(args[0]);
-		SparkConf c = new SparkConf();
-        c.setAppName("ctakes");
-        c.setMaster("local[*]");
-        JavaSparkContext sc = new JavaSparkContext(c);
-        JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(500));
-        JavaDStream<String> paragraphs = ssc.receiverStream(new ParagraphReceiver(StorageLevel.MEMORY_AND_DISK_2(), port));
-        JavaDStream<String> output = paragraphs.map(new CtakesFunction());
-        // Below is "throw away"... more for proof of concept
-        
-        output.foreachRDD(new VoidFunction<JavaRDD<String>>(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void call(JavaRDD<String> RDD) throws Exception {
-				List<String> paragraphs = RDD.collect();
-				for(String par:paragraphs) 
-					System.out.println(par);
-				return;
-			}});
-        
-        try {
-        ssc.start();
-        ssc.awaitTermination();
-        }
-        catch(InterruptedException ex)
-        {
-        	ex.printStackTrace();
-        }
-        finally
-        {	
-        	ssc.close();
-        }
-
+		//args[0] holds file name 
+		SparkConf conf = new SparkConf();
+		conf.setAppName("ctakes-demo");
+		conf.setMaster("local[*]");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+				
+		JavaRDD<String> note = sc.textFile("file:///usr/local/SparkStreamingCTK/testdata100.txt"); //jdfs:// adls://
+		JavaRDD<String> output = note.map(new CtakesFunction());
+		
+		//save output to hdfs
+		//output.saveAsTextFile("file:///usr/local/SparkStreamingCTK/test_output.txt");
+		sc.close();
 	}
 
 }

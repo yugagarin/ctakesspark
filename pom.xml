@@ -19,7 +19,7 @@ the License.
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.celegene.red.spark</groupId>
     <artifactId>spark-ctakes</artifactId>
-    <name>Spark Ctakes</name>
+    <name>Spark cTakes integration</name>
     <version>0.1</version>
     <packaging>jar</packaging>
     <description>
@@ -33,37 +33,16 @@ the License.
     </properties>
     <developers>
         <developer>
-            <id>sc</id>
-            <name>S Chu</name>
+            <id>yvt</id>
+            <name>Yu Toropov</name>
             <email></email>
-            <organization>JPL</organization>
+            <organization>UCLA</organization>
             <timezone>-8</timezone>
             <roles>
                 <role>committer</role>
             </roles>
         </developer>
-        <developer>
-            <id>ms</id>
-            <name>M Starch</name>
-            <email></email>
-            <organization>JPL</organization>
-            <timezone>-8</timezone>
-            <roles>
-                <role>committer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>gt</id>
-            <name>G Totaro</name>
-            <email></email>
-            <organization>JPL</organization>
-            <timezone>-8</timezone>
-            <roles>
-                <role>committer</role>
-            </roles>
-        </developer>
-
-    </developers>
+   </developers>
     <build>
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>
@@ -184,28 +163,12 @@ the License.
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-core_2.11</artifactId>
         <version>${spark.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.spark</groupId>
-        <artifactId>spark-streaming_2.11</artifactId>
-        <version>${spark.version}</version>
-      </dependency>
-      <dependency>
-      	<groupId>it.cnr.iac</groupId>
-      	<artifactId>ctakes-clinical-pipeline</artifactId>
-      	<version>0.0.3-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.ctakes</groupId>
-        <artifactId>ctakes-core</artifactId>
-        <version>${ctakes.version}</version>
         <scope>provided</scope>
-        <exclusions>
-        	<exclusion>
-        	    <groupId>com.google.guava</groupId>
-        		<artifactId>guava</artifactId>
-        	</exclusion>
-        </exclusions>
+      </dependency>
+      <dependency>
+      	<groupId>org.apache.ctakes</groupId>
+      	<artifactId>ctakes-clinical-pipeline</artifactId>
+      	<version>${ctakes.version}</version>
       </dependency>
     </dependencies>
 </project>

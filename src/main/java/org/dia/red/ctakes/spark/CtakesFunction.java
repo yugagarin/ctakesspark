@@ -29,9 +29,10 @@ import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.util.XMLSerializer;
 import org.apache.spark.api.java.function.Function;
 
-import it.cnr.iac.CTAKESClinicalPipelineFactory;
+import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory; 
+
 /**
- * @author Selina Chu, Michael Starch, and Giuseppe Totaro
+ * @author Yuriy Toropov
  *
  */
 public class CtakesFunction implements Function<String, String> {
@@ -39,11 +40,11 @@ public class CtakesFunction implements Function<String, String> {
 	transient JCas jcas = null;
 	transient AnalysisEngineDescription aed = null;
 
-	private void setup() throws UIMAException {
+	private void setup() throws UIMAException,java.net.MalformedURLException {
 		System.setProperty("ctakes.umlsuser", "yvtoropov");
 		System.setProperty("ctakes.umlspw", "Yu123riy");
 		this.jcas = JCasFactory.createJCas();
-		this.aed = CTAKESClinicalPipelineFactory.getDefaultPipeline();
+		this.aed = ClinicalPipelineFactory.getDefaultPipeline();
 
 	}
 	
