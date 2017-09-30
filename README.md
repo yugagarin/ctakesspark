@@ -1,23 +1,19 @@
-# SparkStreamingCTK
-
+# Attempt to integrate ctakes with Apache Spark
 ## Introduction
-An example of using the
-[ClinicalPipeline](https://github.com/giuseppetotaro/ctakes-clinical-pipeline) project
-adding the ability to utilize [Spark Streaming](http://spark.apache.org/streaming/).
+
 
 ## Prerequisites
- * Download and install [Apache cTAKES](http://ctakes.apache.org) v3.2.2 as shown below. It is important to install v3.2.2 as this is expected later on.
+ * Download and install [Apache cTAKES](http://ctakes.apache.org) v4.0.0 as shown below. It is important to install v4.0.0 as this is expected later on.
 ```
 $ cd /usr/local
-$ wget "http://archive.apache.org/dist/ctakes/ctakes-3.2.2/apache-ctakes-3.2.2-bin.tar.gz"
-$ tar -zxvf apache-ctakes-3.2.2-bin.tar.gz
+$ wget "http://archive.apache.org/dist/ctakes/ctakes-4.0.0/apache-ctakes-4.0.0-bin.tar.gz"
+$ tar -zxvf apache-ctakes-4.0.0-bin.tar.gz
 ```
- * Download and install [ClinicalPipeline](https://github.com/giuseppetotaro/ctakes-clinical-pipeline). WARNING - This installation takes a LONG time. Go and make yourself a cup of tea!
 
 ```
 $ cd /usr/local
-$ git clone https://github.com/giuseppetotaro/ctakes-clinical-pipeline.git
-$ cd ctakes-clinical-pipeline
+$ git clone https://github.com/yugagarin/ctakesspark.git
+$ cd ctakesspark
 $ mvn install 
  ```
 
@@ -38,26 +34,8 @@ Then build the project.
 $ mvn install
 ```
 
-## Running the Spark Streaming Service Locally
-```
-$ cd target
-$ tar -zxzf spark-ctakes-0.1-dist.tar.gz
-$ cd spark-ctakes-0.1/bin
-$ ./start-ctakes-server.sh 9321
-```
-This will start the streaming service which you can now interact with. We provide an example below.
+## Download and install resources
 
-## Client Example
-
-This is an example displaying how we can submit portions of clinical text to the streaming service using [netcat](http://netcat.sourceforge.net/). 
-First we need to obtain some sample data, this can be located in the file sampledata.tar.gz
-```
-$ tar -zxvf sampledata.tar.gz
-```
-We can then use netcat to submit this data over TCP/IP to the local service. The service uses the UMLS credentials provided earlier to process the input data.
-```
-$ nc 127.0.0.1 9321 < sampledata/all.txt
-```
 
 ## Executing on an Existing Spark Cluster
 When we installed the project as above, you may have also noticied that besides the generated spark-ctakes-0.1-dist.tar.gz and spark-ctakes-0.1-dist.zip artifacts, the build system also generated an spark-ctakes-0.1-job.jar artifact.
@@ -88,5 +66,5 @@ $ ./bin/spark-submit \
 ```
 
 # License
-SparkStreamingCTK is licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0).
+Ctakesspark is licensed under the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0).
 A copy of that license is shipped with this source code.
