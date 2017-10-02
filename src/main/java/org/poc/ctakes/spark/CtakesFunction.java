@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dia.red.ctakes.spark;
+package org.poc.ctakes.spark;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

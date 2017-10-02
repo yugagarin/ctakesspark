@@ -17,7 +17,7 @@ the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.celegene.red.spark</groupId>
+    <groupId>org.poc.ctakes.spark</groupId>
     <artifactId>spark-ctakes</artifactId>
     <name>Spark cTakes integration</name>
     <version>0.1</version>
@@ -115,6 +115,12 @@ the License.
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
                     <encoding>UTF-8</encoding>
+                     <transformers>
+					 	<!-- add Main-Class to manifest file -->
+                     	<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+							<mainClass>org.poc.ctakes.spark.CtakesSparkMain</mainClass>
+						</transformer>
+			  		</transformers>
                 </configuration>
                 <executions>
                     <execution>
