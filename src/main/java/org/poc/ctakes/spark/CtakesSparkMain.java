@@ -33,20 +33,20 @@ import org.apache.spark.storage.StorageLevel;
 public class CtakesSparkMain {
 
 	/**
-	 * @param args
+	 * @param args input command-line parameters
 	 */
 	public static void main(String[] args) {
 		//args[0] holds file name 
 		SparkConf conf = new SparkConf();
 		conf.setAppName("ctakes-demo");
-		conf.setMaster("local[*]");
+		//conf.setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 				
-		JavaRDD<String> note = sc.textFile("hdfs:///tmp/testdata100.txt"); //jdfs:// adls://
+		JavaRDD<String> note = sc.textFile("adl:///tmp/testdata100.txt"); 
 		JavaRDD<String> output = note.map(new CtakesFunction());
 				
 		//save output to hdfs
-		//output.saveAsTextFile("file:///tmp/testdata100.out/");
+		output.saveAsTextFile("adl:///tmp/testdata100.out/");
 		sc.close();
 	}
 
