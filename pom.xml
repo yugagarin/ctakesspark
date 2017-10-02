@@ -180,7 +180,5 @@ the License.
         <artifactId>jaxb-core</artifactId>
         <version>2.2.11</version>
      </dependency>
-</dependencies>
-      
-    </dependencies>
+	</dependencies>
 </project>
