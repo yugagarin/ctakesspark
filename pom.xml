@@ -72,31 +72,6 @@ the License.
                 </configuration>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-assembly-plugin</artifactId>
-              <version>2.5.4</version>
-              <configuration>
-                <descriptors>
-                  <descriptor>src/main/assembly/assembly.xml</descriptor>
-                  <descriptor>src/main/assembly/hadoop-job.xml</descriptor>
-                </descriptors>
-                <archive>
-                  <manifest>
-                    <mainClass>org.dia.red.ctakes.spark.CtakesSparkMain</mainClass>
-                  </manifest>
-                </archive>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>make-assembly</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>single</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
                 <configuration>
