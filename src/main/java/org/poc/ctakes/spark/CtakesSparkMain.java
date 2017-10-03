@@ -16,7 +16,11 @@
  */
 package org.poc.ctakes.spark;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.*;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -24,28 +28,49 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.storage.StorageLevel;
-
+import org.apache.spark.SparkFiles;
 
 /**
- * @author Selina Chu, Michael Starch, and Giuseppe Totaro
+ * @author Yuriy Toropov
  *
  */
 public class CtakesSparkMain {
 
 	/**
-	 * @param args input command-line parameters
+	 * @param args
+	 *            input command-line parameters
 	 */
 	public static void main(String[] args) {
-		//args[0] holds file name 
+		// args[0] holds file name
 		SparkConf conf = new SparkConf();
 		conf.setAppName("ctakes-demo");
-		//conf.setMaster("local[*]");
+		// conf.setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
-				
-		JavaRDD<String> note = sc.textFile("adl:///tmp/testdata100.txt"); 
+
+		try {
+			// copy dependencies to executors
+			String resourcesArchive = "resources.zip";
+			String descriptorsArchive = "desc.zip";
+
+			String resourcesArchivePath = SparkFiles.get(resourcesArchive);
+			String descriptorsArchivePath = SparkFiles.get(descriptorsArchive);
+
+			File resourcesArchiveFile = new File(resourcesArchivePath);
+			File descriptorsArchiveFile = new File(descriptorsArchivePath);
+
+			File destinationDir = new File(SparkFiles.getRootDirectory());
+
+			FileUtil.unZip(resourcesArchiveFile, destinationDir);
+			FileUtil.unZip(descriptorsArchiveFile, destinationDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// dependencies should be all set by now...
+
+		JavaRDD<String> note = sc.textFile("adl:///tmp/testdata100.txt");
 		JavaRDD<String> output = note.map(new CtakesFunction());
-				
-		//save output to hdfs
+
+		// save output to hdfs
 		output.saveAsTextFile("adl:///tmp/testdata100.out/");
 		sc.close();
 	}
