@@ -19,6 +19,9 @@ package org.poc.ctakes.spark;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import org.apache.uima.UIMAException;
 import org.apache.uima.jcas.JCas;
@@ -29,7 +32,24 @@ import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.util.XMLSerializer;
 import org.apache.spark.api.java.function.Function;
 
-import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory; 
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.textsem.*;
+import org.apache.uima.UIMAException;
+import org.apache.uima.cas.FSIndex;
+import org.apache.uima.cas.Type;
+
+import org.apache.uima.UIMAException;
+
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.cas.impl.XmiCasSerializer;
+import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.pipeline.SimplePipeline;
+
+import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.util.XMLSerializer;
+
+import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory;
 
 /**
  * @author Yuriy Toropov
@@ -40,14 +60,14 @@ public class CtakesFunction implements Function<String, String> {
 	transient JCas jcas = null;
 	transient AnalysisEngineDescription aed = null;
 
-	private void setup() throws UIMAException,java.net.MalformedURLException {
+	private void setup() throws UIMAException, java.net.MalformedURLException {
 		System.setProperty("ctakes.umlsuser", "yvtoropov");
 		System.setProperty("ctakes.umlspw", "Yu123riy");
 		this.jcas = JCasFactory.createJCas();
 		this.aed = ClinicalPipelineFactory.getDefaultPipeline();
 
 	}
-	
+
 	private void readObject(ObjectInputStream in) {
 		try {
 			in.defaultReadObject();
@@ -60,21 +80,64 @@ public class CtakesFunction implements Function<String, String> {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
+
+	/*	@Override
 	public String call(String paragraph) throws Exception {
 
 		this.jcas.setDocumentText(paragraph);
-		
+
 		// final AnalysisEngineDescription aed = getFastPipeline(); // Outputs
 		// from default and fast pipelines are identical
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		SimplePipeline.runPipeline(this.jcas, this.aed);
 		XmiCasSerializer xmiSerializer = new XmiCasSerializer(jcas.getTypeSystem());
 		XMLSerializer xmlSerializer = new XMLSerializer(baos, true);
-		xmiSerializer.serialize(jcas.getCas(),xmlSerializer.getContentHandler());
+		xmiSerializer.serialize(jcas.getCas(), xmlSerializer.getContentHandler());
 		this.jcas.reset();
 		return baos.toString("utf-8");
 	}
+*/
+	@Override
+	public String call(String paragraph) throws Exception {
 
+		this.jcas.setDocumentText(paragraph);
+
+		SimplePipeline.runPipeline(this.jcas, this.aed);
+		FSIndex index = this.jcas.getAnnotationIndex(IdentifiedAnnotation.type);
+		Iterator iter = index.iterator();
+
+		ArrayList<String> types = new ArrayList<String>();
+
+		//only get the following types of annotations 
+		types.add("org.apache.ctakes.typesystem.type.textsem.SignSymptomMention");
+		types.add("org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention");
+		types.add("org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention");
+		types.add("org.apache.ctakes.typesystem.type.textsem.ProcedureMention");
+		types.add("org.apache.ctakes.typesystem.type.textsem.MedicationMention");
+
+		String type;
+		String completeResult="";
+		FSArray codesArray;
+		ArrayList<String> codesStringArray = new ArrayList<String>();
+
+		while (iter.hasNext()) {
+			IdentifiedAnnotation annotation = (IdentifiedAnnotation) iter.next();
+			type = annotation.getType().toString();
+			if (types.contains(type)) {
+				
+				String result=type;
+
+				codesArray = annotation.getOntologyConceptArr();
+				for (int i = 0; i < codesArray.size(); i++) {
+					result=String.format("%s,%s", result, ((OntologyConcept)codesArray.get(i)).getCode() );
+				}
+				
+				codesStringArray.clear();
+				completeResult=String.format("%s|%s",completeResult,result);
+			}
+		}
+
+		this.jcas.reset();
+		return completeResult;
+	}
 }

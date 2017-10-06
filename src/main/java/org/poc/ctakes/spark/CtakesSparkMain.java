@@ -46,8 +46,11 @@ public class CtakesSparkMain {
 		conf.setAppName("ctakes-demo");
 		// conf.setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
-
-		try {
+		
+		/*try {
+		
+			boolean dependeciesDirCreated = false;
+			
 			// copy dependencies to executors
 			String resourcesArchive = "resources.zip";
 			String descriptorsArchive = "desc.zip";
@@ -58,13 +61,25 @@ public class CtakesSparkMain {
 			File resourcesArchiveFile = new File(resourcesArchivePath);
 			File descriptorsArchiveFile = new File(descriptorsArchivePath);
 
-			File destinationDir = new File(SparkFiles.getRootDirectory());
+			File destinationDir = new File("/tmp/ctakesdependencies");// new File(SparkFiles.getRootDirectory());
+			if (destinationDir.exists()) {
+				destinationDir.delete();
+			
+			dependeciesDirCreated=destinationDir.mkdir();
+			
 
-			FileUtil.unZip(resourcesArchiveFile, destinationDir);
-			FileUtil.unZip(descriptorsArchiveFile, destinationDir);
+			if (dependeciesDirCreated) {
+				FileUtil.unZip(resourcesArchiveFile, destinationDir);
+				FileUtil.unZip(descriptorsArchiveFile, destinationDir);
+			
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} */
+
 		// dependencies should be all set by now...
 
 		JavaRDD<String> note = sc.textFile("adl:///tmp/testdata100.txt");
@@ -72,6 +87,8 @@ public class CtakesSparkMain {
 
 		// save output to hdfs
 		output.saveAsTextFile("adl:///tmp/testdata100.out/");
+
+		
 		sc.close();
 	}
 
