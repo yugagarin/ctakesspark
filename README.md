@@ -38,9 +38,9 @@ $ mvn install
 
 
 ## Executing on an Existing Spark Cluster
-When we installed the project as above, you may have also noticied that besides the generated spark-ctakes-0.1-dist.tar.gz and spark-ctakes-0.1-dist.zip artifacts, the build system also generated an spark-ctakes-0.1-job.jar artifact.
+When you installed the project as above, you may have also noticied the build system generates an spark-ctakes-0.1-shaded.jar artifact.
 
-This artifact is a self-contained job JAR (uber jar) that contains all the dependencies required to run our application on an existing Cluster.
+This artifact is a self-contained job JAR (uber jar) that contains all the dependencies required to run our application on an existing cluster.
 
 The [Spark Documentation](https://spark.apache.org/docs/1.1.0/submitting-applications.html) provides excellent context on how to submit your jobs. A bare bones example is provided below:
  * Typical syntax using spark-submit
