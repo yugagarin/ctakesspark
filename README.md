@@ -56,13 +56,14 @@ The [Spark Documentation](https://spark.apache.org/docs/1.1.0/submitting-applica
 ```
 Now an example for our application
 ```
-$ ./bin/spark-submit \
-  --class org.dia.red.ctakes.spark.CtakesSparkMain \
-  --master spark://207.184.161.138:7077 \
-  --executor-memory 20G \
-  --total-executor-cores 100 \
-  target/spark-ctakes-0.1-job.jar \
-  sampledata/all.txt
+$ ./usr/bin/spark-submit \
+--class org.poc.ctakes.spark.CtakesSparkMain \
+--master yarn --deploy-mode cluster \
+--conf spark.executor.extraClassPath=/tmp/ctakesdependencies/  \
+--conf spark.driver.extraClassPath=/tmp/ctakesdependencies/ \
+--conf spark.driver.memory=5g --executor-memory 10g \
+spark-ctakes-0.1-shaded.jar
+
 ```
 
 # License
