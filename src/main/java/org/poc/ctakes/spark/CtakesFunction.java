@@ -16,13 +16,16 @@
  */
 package org.poc.ctakes.spark;
 
+//Java
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.*;
 
+//UIMA
 import org.apache.uima.UIMAException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -30,25 +33,16 @@ import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.util.XMLSerializer;
-import org.apache.spark.api.java.function.Function;
-
-import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
-import org.apache.ctakes.typesystem.type.textsem.*;
-import org.apache.uima.UIMAException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.Type;
-
-import org.apache.uima.UIMAException;
-
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.cas.impl.XmiCasSerializer;
-import org.apache.uima.fit.factory.JCasFactory;
-import org.apache.uima.fit.pipeline.SimplePipeline;
-
 import org.apache.uima.jcas.cas.FSArray;
-import org.apache.uima.util.XMLSerializer;
 
+//Apache Spark
+import org.apache.spark.api.java.function.Function;
+
+//Apache cTakes
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.textsem.*;
 import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory;
 
 /**
@@ -95,9 +89,10 @@ public class CtakesFunction implements Function<String, String> {
 		xmiSerializer.serialize(jcas.getCas(), xmlSerializer.getContentHandler());
 		this.jcas.reset();
 		return baos.toString("utf-8");
-	}
-*/
+	}*/
+	
 	@Override
+	//THIS IS FOR POC ONLY FOR NOW
 	public String call(String paragraph) throws Exception {
 
 		this.jcas.setDocumentText(paragraph);
@@ -110,33 +105,72 @@ public class CtakesFunction implements Function<String, String> {
 
 		//only get the following types of annotations 
 		types.add("org.apache.ctakes.typesystem.type.textsem.SignSymptomMention");
+		HashSet<String> hsSignSymptomMention=new HashSet<String>();
+		
 		types.add("org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention");
+		HashSet<String> hsDiseaseDisorderMention=new HashSet<String>();
+		
 		types.add("org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention");
+		HashSet<String> hsAnatomicalSiteMention=new HashSet<String>();
+		
 		types.add("org.apache.ctakes.typesystem.type.textsem.ProcedureMention");
+		HashSet<String> hsProcedureMention=new HashSet<String>();
+		
 		types.add("org.apache.ctakes.typesystem.type.textsem.MedicationMention");
-
-		String type;
+		HashSet<String> hsMedicationMention=new HashSet<String>();
+		
+		String type="";
 		String completeResult="";
 		FSArray codesArray;
-		ArrayList<String> codesStringArray = new ArrayList<String>();
-
+		
 		while (iter.hasNext()) {
+			
+			//TODO: Check if we correctly iterate over index
+			//using https://uima.apache.org/d/uimaj-2.7.0/apidocs/org/apache/uima/cas/FSIterator.html documentation
 			IdentifiedAnnotation annotation = (IdentifiedAnnotation) iter.next();
 			type = annotation.getType().toString();
 			if (types.contains(type)) {
 				
-				String result=type;
-
 				codesArray = annotation.getOntologyConceptArr();
+				String[] codesStrings=new String[codesArray.size()];
+				
 				for (int i = 0; i < codesArray.size(); i++) {
-					result=String.format("%s,%s", result, ((OntologyConcept)codesArray.get(i)).getCode() );
+					codesStrings[i]=((OntologyConcept)codesArray.get(i)).getCode();
 				}
 				
-				codesStringArray.clear();
-				completeResult=String.format("%s|%s",completeResult,result);
+				switch(type)
+				{
+					case "org.apache.ctakes.typesystem.type.textsem.SignSymptomMention":
+						hsSignSymptomMention.addAll(Arrays.asList(codesStrings));
+						break;
+					case "org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention":
+						hsDiseaseDisorderMention.addAll(Arrays.asList(codesStrings));
+						break;
+					case "org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention":
+						hsAnatomicalSiteMention.addAll(Arrays.asList(codesStrings));
+						break;
+					case "org.apache.ctakes.typesystem.type.textsem.ProcedureMention":
+						hsProcedureMention.addAll(Arrays.asList(codesStrings));
+						break;
+					case "org.apache.ctakes.typesystem.type.textsem.MedicationMention":
+						hsMedicationMention.addAll(Arrays.asList(codesStrings));
+						break;
+				}
 			}
 		}
 
+		completeResult=String.format("%s:%s|%s:%s|%s:%s|%s:%s|%s:%s", 
+				"org.apache.ctakes.typesystem.type.textsem.SignSymptomMention",
+				hsSignSymptomMention.toString(),
+				"org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention",
+				hsDiseaseDisorderMention.toString(),
+				"org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention",
+				hsAnatomicalSiteMention.toString(),
+				"org.apache.ctakes.typesystem.type.textsem.ProcedureMention",
+				hsProcedureMention.toString(),
+				"org.apache.ctakes.typesystem.type.textsem.MedicationMention",
+				hsMedicationMention.toString());
+		
 		this.jcas.reset();
 		return completeResult;
 	}
