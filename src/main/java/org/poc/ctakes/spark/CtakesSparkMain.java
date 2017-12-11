@@ -16,12 +16,16 @@
  */
 package org.poc.ctakes.spark;
 
+//Java imports
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+//Hadoop imports
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.*;
 
+//Apache Spark imports
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -42,53 +46,26 @@ public class CtakesSparkMain {
 	 */
 	public static void main(String[] args) {
 		// args[0] holds file name
+		
+		int numPartitions=4; //could be done as a parameter args[1]
+		
 		SparkConf conf = new SparkConf();
 		conf.setAppName("ctakes-demo");
 		// conf.setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
-		
-		/*try {
-		
-			boolean dependeciesDirCreated = false;
-			
-			// copy dependencies to executors
-			String resourcesArchive = "resources.zip";
-			String descriptorsArchive = "desc.zip";
 
-			String resourcesArchivePath = SparkFiles.get(resourcesArchive);
-			String descriptorsArchivePath = SparkFiles.get(descriptorsArchive);
-
-			File resourcesArchiveFile = new File(resourcesArchivePath);
-			File descriptorsArchiveFile = new File(descriptorsArchivePath);
-
-			File destinationDir = new File("/tmp/ctakesdependencies");// new File(SparkFiles.getRootDirectory());
-			if (destinationDir.exists()) {
-				destinationDir.delete();
-			
-			dependeciesDirCreated=destinationDir.mkdir();
-			
-
-			if (dependeciesDirCreated) {
-				FileUtil.unZip(resourcesArchiveFile, destinationDir);
-				FileUtil.unZip(descriptorsArchiveFile, destinationDir);
-			
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} */
-
-		// dependencies should be all set by now...
+		//dependencies should be all set by now...
 
 		JavaRDD<String> note = sc.textFile("adl:///tmp/testdata100.txt");
-		JavaRDD<String> output = note.map(new CtakesFunction());
+		//JavaRDD<String> output = note.map(new CtakesFunction());
+		
+		//repartition RDD for processing parallelism
+		note=note.repartition(numPartitions);
+		JavaRDD<String> output = note.mapPartitions(new CtakesFlatMapFunction());
 
 		// save output to hdfs
 		output.saveAsTextFile("adl:///tmp/testdata100.out/");
 
-		
 		sc.close();
 	}
 

@@ -14,7 +14,8 @@ $ tar -zxvf apache-ctakes-4.0.0-bin.tar.gz
 $ cd /usr/local
 $ git clone https://github.com/yugagarin/ctakesspark.git
 $ cd ctakesspark
-$ mvn install 
+$ apt install maven
+$ mvn clean install 
  ```
 
 ## Installation
@@ -31,7 +32,7 @@ Then populate the following two properties with your username and password respe
 ```
 Then build the project.
 ```
-$ mvn install
+$ mvn clean install
 ```
 
 ## Download and install resources

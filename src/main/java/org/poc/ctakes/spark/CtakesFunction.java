@@ -16,7 +16,7 @@
  */
 package org.poc.ctakes.spark;
 
-//Java
+//Java imports
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.*;
 
-//UIMA
+//UIMA imports
 import org.apache.uima.UIMAException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -38,10 +38,10 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.cas.FSArray;
 
-//Apache Spark
+//Apache Spark imports
 import org.apache.spark.api.java.function.Function;
 
-//Apache cTakes
+//Apache cTakes imports
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.textsem.*;
 import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory;
@@ -56,8 +56,8 @@ public class CtakesFunction implements Function<String, String> {
 	transient AnalysisEngineDescription aed = null;
 
 	private void setup() throws UIMAException, java.net.MalformedURLException {
-		System.setProperty("ctakes.umlsuser", "yvtoropov");
-		System.setProperty("ctakes.umlspw", "Yu123riy");
+		System.setProperty("ctakes.umlsuser", "");
+		System.setProperty("ctakes.umlspw", "");
 		this.jcas = JCasFactory.createJCas();
 		this.aed = ClinicalPipelineFactory.getDefaultPipeline();
 
@@ -77,17 +77,20 @@ public class CtakesFunction implements Function<String, String> {
 	}
 
 	/*
+	 * //Code to produce CAS output in XML form
 	 * @Override public String call(String paragraph) throws Exception {
 	 * 
 	 * this.jcas.setDocumentText(paragraph);
 	 * 
-	 * // final AnalysisEngineDescription aed = getFastPipeline(); // Outputs //
-	 * from default and fast pipelines are identical ByteArrayOutputStream baos =
-	 * new ByteArrayOutputStream(); SimplePipeline.runPipeline(this.jcas, this.aed);
+	 * // final AnalysisEngineDescription aed = getFastPipeline(); 
+	 * // Outputs from default and fast pipelines are identical 
+	 * ByteArrayOutputStream baos = new ByteArrayOutputStream(); SimplePipeline.runPipeline(this.jcas, this.aed);
 	 * XmiCasSerializer xmiSerializer = new XmiCasSerializer(jcas.getTypeSystem());
 	 * XMLSerializer xmlSerializer = new XMLSerializer(baos, true);
 	 * xmiSerializer.serialize(jcas.getCas(), xmlSerializer.getContentHandler());
-	 * this.jcas.reset(); return baos.toString("utf-8"); }
+	 * this.jcas.reset(); 
+	 * return baos.toString("utf-8"); 
+	 * }
 	 */
 
 	@Override
@@ -104,19 +107,11 @@ public class CtakesFunction implements Function<String, String> {
 
 		// only get the following types of annotations
 		types.add("org.apache.ctakes.typesystem.type.textsem.SignSymptomMention");
-		HashSet<String> hsSignSymptomMention = new HashSet<String>();
-
 		types.add("org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention");
-		HashSet<String> hsDiseaseDisorderMention = new HashSet<String>();
-
 		types.add("org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention");
-		HashSet<String> hsAnatomicalSiteMention = new HashSet<String>();
-
 		types.add("org.apache.ctakes.typesystem.type.textsem.ProcedureMention");
-		HashSet<String> hsProcedureMention = new HashSet<String>();
-
 		types.add("org.apache.ctakes.typesystem.type.textsem.MedicationMention");
-		HashSet<String> hsMedicationMention = new HashSet<String>();
+		HashSet<String> hsAnnotations = new HashSet<String>();
 
 		String type = "";
 		String completeResult = "";
@@ -134,39 +129,16 @@ public class CtakesFunction implements Function<String, String> {
 				String[] codesStrings = new String[codesArray.size()];
 
 				for (int i = 0; i < codesArray.size(); i++) {
-					codesStrings[i] = ((OntologyConcept) codesArray.get(i)).getCode();
+					codesStrings[i] = String.format("%s,%s", type,((OntologyConcept) codesArray.get(i)).getCode());
 				}
 
-				switch (type) {
-
-				case "org.apache.ctakes.typesystem.type.textsem.SignSymptomMention":
-					hsSignSymptomMention.addAll(Arrays.asList(codesStrings));
-					break;
-				case "org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention":
-					hsDiseaseDisorderMention.addAll(Arrays.asList(codesStrings));
-					break;
-				case "org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention":
-					hsAnatomicalSiteMention.addAll(Arrays.asList(codesStrings));
-					break;
-				case "org.apache.ctakes.typesystem.type.textsem.ProcedureMention":
-					hsProcedureMention.addAll(Arrays.asList(codesStrings));
-					break;
-				case "org.apache.ctakes.typesystem.type.textsem.MedicationMention":
-					hsMedicationMention.addAll(Arrays.asList(codesStrings));
-					break;
-				}
+				hsAnnotations.addAll(Arrays.asList(codesStrings));
 			}
 
 			iter.moveToNext();
 		}
-
-		completeResult = String.format("%s:%s|%s:%s|%s:%s|%s:%s|%s:%s",
-				"org.apache.ctakes.typesystem.type.textsem.SignSymptomMention", hsSignSymptomMention.toString(),
-				"org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention", hsDiseaseDisorderMention.toString(),
-				"org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention", hsAnatomicalSiteMention.toString(),
-				"org.apache.ctakes.typesystem.type.textsem.ProcedureMention", hsProcedureMention.toString(),
-				"org.apache.ctakes.typesystem.type.textsem.MedicationMention", hsMedicationMention.toString());
-
+	
+		completeResult = String.join("|", hsAnnotations);
 		this.jcas.reset();
 		return completeResult;
 	}
