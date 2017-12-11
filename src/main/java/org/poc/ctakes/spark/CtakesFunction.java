@@ -126,13 +126,10 @@ public class CtakesFunction implements Function<String, String> {
 			if (types.contains(type)) {
 
 				codesArray = annotation.getOntologyConceptArr();
-				String[] codesStrings = new String[codesArray.size()];
-
+				
 				for (int i = 0; i < codesArray.size(); i++) {
-					codesStrings[i] = String.format("%s,%s", type,((OntologyConcept) codesArray.get(i)).getCode());
+					hsAnnotations.add(String.format("%s,%s", type,((OntologyConcept) codesArray.get(i)).getCode()));
 				}
-
-				hsAnnotations.addAll(Arrays.asList(codesStrings));
 			}
 
 			iter.moveToNext();
