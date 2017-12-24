@@ -11,6 +11,7 @@ $ tar -zxvf apache-ctakes-4.0.0-bin.tar.gz
 ```
 
 ```
+$ sudo su
 $ cd /usr/local
 $ git clone https://github.com/yugagarin/ctakesspark.git
 $ cd ctakesspark
@@ -22,7 +23,12 @@ $ mvn clean install
 Update CtakesFunction.java with [UMLS](http://www.nlm.nih.gov/research/umls/) username and password.
 The case be obtained by [registering with and signing the UMLS Metathesaurus License](https://uts.nlm.nih.gov//license.html). Once you have it, proceeed as below:
 ```
-$ vim src/main/java/org/dia/red/ctakes/spark/CtakesFunction.java
+$ vim src/main/java/org/dia/red/ctakes/spark/CtakesFunction.java 
+
+or
+
+vim src/main/java/org/dia/red/ctakes/spark/CtakesFlatMapFunction.java
+
 ```
 Then populate the following two properties with your username and password respectively:
 ```
