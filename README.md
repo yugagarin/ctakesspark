@@ -42,6 +42,8 @@ $ mvn clean install
 ```
 
 ## Download and install resources
+cTakes depends descriptor files and resource databases for NER. Descriptor files can be downloaded from
+official [cTakes source code](https://github.com/apache/ctakes) and resource databases can be taken [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+Dictionaries+and+Models)
 
 
 ## Executing on an Existing Spark Cluster
