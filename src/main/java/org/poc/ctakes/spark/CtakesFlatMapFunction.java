@@ -27,17 +27,19 @@ import javax.swing.event.ListSelectionEvent;
 import java.util.*;
 
 //UIMA imports
-import org.apache.uima.UIMAException;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.util.XMLSerializer;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.UIMAException;
 
 //Apache Spark imports
 import org.apache.spark.api.java.function.Function;
@@ -52,16 +54,17 @@ import org.apache.ctakes.clinicalpipeline.ClinicalPipelineFactory;
  * @author Yuriy Toropov
  *
  */
-public class CtakesFlatMapFunction implements FlatMapFunction<java.util.Iterator<String>, String> { // <T,R>
+//<T,R>
+public class CtakesFlatMapFunction implements FlatMapFunction<java.util.Iterator<String>, String> { 
 
 	transient JCas jcas = null;
-	transient AnalysisEngineDescription aed = null;
+	transient AnalysisEngine ae = null;
 
 	private void setup() throws UIMAException, java.net.MalformedURLException {
 		System.setProperty("ctakes.umlsuser", "");
 		System.setProperty("ctakes.umlspw", "");
 		this.jcas = JCasFactory.createJCas();
-		this.aed = ClinicalPipelineFactory.getDefaultPipeline();
+		this.ae = AnalysisEngineFactory.createEngine(ClinicalPipelineFactory.getDefaultPipeline());
 
 	}
 
@@ -91,10 +94,6 @@ public class CtakesFlatMapFunction implements FlatMapFunction<java.util.Iterator
 			
 		}
 		
-		//ArrayList<String> newPartition= Arrays.asList(partition);
-		//newPartition=newPartition.stream().map(new CtakesMapFunctionInner()).collect(Collectors::toList); 
-		//return newPartition.iterator();
-		
 		return analyzed.iterator();
 	}
 	
@@ -106,7 +105,9 @@ public class CtakesFlatMapFunction implements FlatMapFunction<java.util.Iterator
 
 			CtakesFlatMapFunction.this.jcas.setDocumentText(paragraph);
 
-			SimplePipeline.runPipeline(CtakesFlatMapFunction.this.jcas, CtakesFlatMapFunction.this.aed);
+			//
+			SimplePipeline.runPipeline(CtakesFlatMapFunction.this.jcas, CtakesFlatMapFunction.this.ae);
+			
 			FSIndex index = CtakesFlatMapFunction.this.jcas.getAnnotationIndex(IdentifiedAnnotation.type);
 			FSIterator iter = index.iterator();
 

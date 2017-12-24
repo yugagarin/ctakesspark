@@ -26,17 +26,19 @@ import java.util.Iterator;
 import java.util.*;
 
 //UIMA imports
-import org.apache.uima.UIMAException;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
+import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.util.XMLSerializer;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.UIMAException;
 
 //Apache Spark imports
 import org.apache.spark.api.java.function.Function;
@@ -54,12 +56,14 @@ public class CtakesFunction implements Function<String, String> {
 
 	transient JCas jcas = null;
 	transient AnalysisEngineDescription aed = null;
+	//transient AnalysisEngine ae = null;
 
 	private void setup() throws UIMAException, java.net.MalformedURLException {
 		System.setProperty("ctakes.umlsuser", "");
 		System.setProperty("ctakes.umlspw", "");
 		this.jcas = JCasFactory.createJCas();
 		this.aed = ClinicalPipelineFactory.getDefaultPipeline();
+		//this.ae = AnalysisEngineFactory.createEngine(ClinicalPipelineFactory.getDefaultPipeline());
 
 	}
 
@@ -78,6 +82,16 @@ public class CtakesFunction implements Function<String, String> {
 
 	/*
 	 * //Code to produce CAS output in XML form
+	 * //or use XmiWriterCasConsumerCtakes class from org.apache.ctakes.core.cc
+	 * AnalysisEngine xWriter = {return AnalysisEngineFactory.createEngine(
+     *   XmiWriterCasConsumerCtakes.class,
+     *   XmiWriterCasConsumerCtakes.PARAM_OUTPUTDIR,
+     *   outputDirectory
+     *   ); }
+     *   SimplePipeline.runPipeline(
+     *   collectionReader,
+     *   aggregateBuilder.createAggregate(),
+     *   xWriter); 
 	 * @Override public String call(String paragraph) throws Exception {
 	 * 
 	 * this.jcas.setDocumentText(paragraph);
@@ -100,6 +114,7 @@ public class CtakesFunction implements Function<String, String> {
 		this.jcas.setDocumentText(paragraph);
 
 		SimplePipeline.runPipeline(this.jcas, this.aed);
+		//SimplePipeline.runPipeline(this.jcas, this.ae);
 		FSIndex index = this.jcas.getAnnotationIndex(IdentifiedAnnotation.type);
 		FSIterator iter = index.iterator();
 
@@ -126,7 +141,8 @@ public class CtakesFunction implements Function<String, String> {
 			if (types.contains(type)) {
 
 				codesArray = annotation.getOntologyConceptArr();
-				
+				String[] codesStrings = new String[codesArray.size()];
+
 				for (int i = 0; i < codesArray.size(); i++) {
 					hsAnnotations.add(String.format("%s,%s", type,((OntologyConcept) codesArray.get(i)).getCode()));
 				}

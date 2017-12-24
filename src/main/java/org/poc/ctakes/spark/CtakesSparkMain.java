@@ -47,7 +47,7 @@ public class CtakesSparkMain {
 	public static void main(String[] args) {
 		// args[0] holds file name
 		
-		int numPartitions=4; //could be done as a parameter args[1]
+		int numPartitions=4; //should be done as a parameter args[1]
 		
 		SparkConf conf = new SparkConf();
 		conf.setAppName("ctakes-demo");
@@ -60,7 +60,7 @@ public class CtakesSparkMain {
 		//JavaRDD<String> output = note.map(new CtakesFunction());
 		
 		//repartition RDD for processing parallelism
-		note=note.repartition(numPartitions);
+		//note=note.repartition(numPartitions);
 		JavaRDD<String> output = note.mapPartitions(new CtakesFlatMapFunction());
 
 		// save output to hdfs
