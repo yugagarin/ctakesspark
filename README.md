@@ -1,6 +1,12 @@
-# Attempt to integrate ctakes with Apache Spark
+# Attempt to integrate cTakes with Apache Spark
 ## Introduction
+This project is by no means a fully spark-aware implementation of cTakes. It meant to fuse cTakes 
+processing engine and parallelism provided by Spark/Hadoop to make cTakes work @ scale and access data 
+stored in HDFS-like storage. This could be viewed as an attempt to provide an alternative to [UIMA DUCC](https://uima.apache.org/d/uima-ducc-current/duccbook.html).
 
+To make things completely Spark-aware one need to make changes to cTakes processing engine code directly. 
+For example, NER lookups would need to change from using hsql (or any other relational database) to use 
+data frames/RDDs for performance.
 
 ## Prerequisites
  * Download and install [Apache cTAKES](http://ctakes.apache.org) v4.0.0 as shown below. It is important to install v4.0.0 as this is expected later on.
