@@ -11,11 +11,12 @@ data frames/RDDs for performance.
 ## Prerequisites
  * Download and install [Apache cTAKES](http://ctakes.apache.org) v4.0.0 as shown below. It is important to install v4.0.0 as this is expected later on.
 ```
+$ sudo su
 $ cd /usr/local
 $ wget "http://archive.apache.org/dist/ctakes/ctakes-4.0.0/apache-ctakes-4.0.0-bin.tar.gz"
 $ tar -zxvf apache-ctakes-4.0.0-bin.tar.gz
 ```
-
+cTAKES source code is available [here](http://archive.apache.org/dist/ctakes/ctakes-4.0.0/apache-ctakes-4.0.0-src.tar.gz). 
 ```
 $ sudo su
 $ cd /usr/local
