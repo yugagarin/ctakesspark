@@ -1,4 +1,4 @@
-# Attempt to integrate cTakes with Apache Spark
+# Attempt to integrate Apache cTakes with Apache Spark
 ## Introduction
 This project is by no means a fully spark-aware implementation of cTakes. It meant to fuse cTakes 
 processing engine and parallelism provided by Spark/Hadoop to make cTakes work @ scale and access data 
@@ -22,8 +22,10 @@ $ cd /usr/local
 $ git clone https://github.com/yugagarin/ctakesspark.git
 $ cd ctakesspark
 $ apt install maven
-$ mvn clean install 
  ```
+## Download and install resources
+cTakes depends on descriptor files and resource databases for NER. Descriptor files can be downloaded from
+official [cTakes source code](https://github.com/apache/ctakes) and resource databases can be taken [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+Dictionaries+and+Models).
 
 ## Installation
 Update CtakesFunction.java with [UMLS](http://www.nlm.nih.gov/research/umls/) username and password.
@@ -45,12 +47,8 @@ private void setup() throws UIMAException {
 Then build the project.
 ```
 $ mvn clean install
+$ cd ./target
 ```
-
-## Download and install resources
-cTakes depends on descriptor files and resource databases for NER. Descriptor files can be downloaded from
-official [cTakes source code](https://github.com/apache/ctakes) and resource databases can be taken [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+Dictionaries+and+Models)
-
 
 ## Executing on an Existing Spark Cluster
 When you installed the project as above, you may have also noticied the build system generates an spark-ctakes-0.1-shaded.jar artifact.
@@ -76,7 +74,7 @@ $ ./usr/bin/spark-submit \
 --master yarn --deploy-mode cluster \
 --conf spark.executor.extraClassPath=/tmp/ctakesdependencies/  \
 --conf spark.driver.extraClassPath=/tmp/ctakesdependencies/ \
---conf spark.driver.memory=5g --executor-memory 10g \
+--conf spark.driver.memory=5g --executor-memory=10g \
 spark-ctakes-0.1-shaded.jar
 
 ```
